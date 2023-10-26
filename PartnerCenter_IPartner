@@ -1,0 +1,13 @@
+string clientId = "";
+string clientSecret = "";
+string partnerServiceApiEndpoint = "";
+
+var customerManager = new CustomerManager(clientId, clientSecret, partnerServiceApiEndpoint);
+
+private readonly IAggregatePartner _partner;
+
+public CustomerManager(string clientId, string clientSecret, string partnerServiceApiEndpoint)
+    {
+        var credentials = PartnerCredentials.Instance.GenerateByApplicationCredentials(clientId, clientSecret, partnerServiceApiEndpoint);
+        _partner = PartnerService.Instance.CreatePartnerOperations(credentials);
+    }
