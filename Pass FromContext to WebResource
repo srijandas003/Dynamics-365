@@ -32,4 +32,4 @@ LoadWebResource: function(executionContext) {
 
 
 // Accesssing the FormContext on the WebResource
-redirect to : 
+//redirect to : https://github.com/srijandas003/Dynamics-365/blob/main/Web%20Resource(Accessing%20FormContext%20))
