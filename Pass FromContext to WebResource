@@ -1,0 +1,35 @@
+// Passing FormContext via JS Web Resource : 
+if (typeof (Affinity) === "undefined") {
+    Affinity = {
+        __namespace: true
+    };
+}
+if (typeof (Affinity.Library) === "undefined") {
+    Affinity.Library = {
+        __namespace: true
+    };
+}
+if (typeof ($) === "undefined") {
+    $ = parent.$;
+    jQuery = parent.jQuery;
+}
+Affinity.Library.contact = {
+LoadWebResource: function(executionContext) {
+    let formContext = executionContext.getFormContext();
+    Affinity.Library.contact.CalculateAccountBalance(formContext);
+    Affinity.Library.contact.FormNavigation(executionContext);
+    let wrControl = formContext.getControl("WebResource_new_1");
+    if (wrControl) {
+        wrControl.getContentWindow().then(
+            function (contentWindow) {
+                contentWindow.setClientApiContext(Xrm, formContext);
+            }
+        )
+    }
+    },
+    __namespace: true
+};
+
+
+// Accesssing the FormContext on the WebResource
+redirect to : 
