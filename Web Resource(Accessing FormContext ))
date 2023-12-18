@@ -1,0 +1,114 @@
+<html>
+<head>
+    <title>MS Dynamic CRM</title>
+    <script>
+        var dataSet;
+        var arrData = [];
+        if (typeof ($) === "undefined") {
+            $ = parent.$;
+            jQuery = parent.jQuery;
+        }</script>
+    <script src="ClientGlobalContext.js.aspx" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.2.5/css/select.dataTables.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+</head>
+
+<body style="word-wrap: break-word;">
+    <table id="customdatatable" class="display table" width="100%"></table>
+
+    <script>
+
+
+        function table() {
+            $('#customdatatable').DataTable({
+                data: arrData,
+                columns: [
+                    { title: "Transaction" },
+                    { title: "Posted" },
+                    { title: "Post Code" },
+                    { title: "Amount" },
+                    { title: "Check Number" },
+                    { title: "Memo" },
+                    { title: "Source" },
+                    { title: "Bank Transaction ID" },
+                    { title: "Employee Key" },
+                    { title: "Resident Key" }
+                ]
+            });
+        }
+        function setClientApiContext(xrm, formContext) {
+            debugger
+            window.Xrm = xrm;
+            window.formContext = formContext;
+            let residentKey = formContext.getAttribute("ams_residentkey") == null ? -1 : formContext.getAttribute("ams_residentkey").getValue();
+            if (residentKey == null) {
+                residentKey = -1;
+            }
+            let crmUrl = Xrm.Utility.getGlobalContext().getClientUrl();
+            $.ajax({
+                type: "GET",
+                url: Xrm.Utility.getGlobalContext().getClientUrl() + `/api/data/v9.2/ams_residenttransactionses?$select=ams_retamount,ams_retbanktransactionid,ams_retchecknumber,ams_employeekey,ams_retmemo,ams_retpostcode,ams_retposted,ams_residentkey,ams_retsource,ams_rettransaction&$filter=ams_residentkey eq ${residentKey}`,
+                async: false,
+                headers: {
+                    "OData-MaxVersion": "4.0",
+                    "OData-Version": "4.0",
+                    "Content-Type": "application/json; charset=utf-8",
+                    "Accept": "application/json",
+                    "Prefer": "odata.include-annotations=*"
+                },
+                success: function (data, textStatus, xhr) {
+                    var results = data;
+                    console.log(results);
+                    for (var i = 0; i < results.value.length; i++) {
+                        var result = results.value[i];
+                        // Columns
+                        var ams_residenttransactionsid = result["ams_residenttransactionsid"]; // Guid
+                        var ams_retamount = result["ams_retamount"]; // Decimal
+                        var ams_retamount_formatted = result["ams_retamount@OData.Community.Display.V1.FormattedValue"];
+                        var ams_retbanktransactionid = result["ams_retbanktransactionid"]; // Multiline Text
+                        var ams_retchecknumber = result["ams_retchecknumber"]; // Multiline Text
+                        var ams_employeekey = result["ams_employeekey"]; // Whole Number
+                        var ams_employeekey_formatted = result["ams_employeekey@OData.Community.Display.V1.FormattedValue"];
+                        var ams_retmemo = result["ams_retmemo"]; // Multiline Text
+                        var ams_retpostcode = result["ams_retpostcode"]; // Text
+                        var ams_retposted = result["ams_retposted"]; // Date Time
+                        var ams_retposted_formatted = result["ams_retposted@OData.Community.Display.V1.FormattedValue"];
+                        var ams_residentkey = result["ams_residentkey"]; // Whole Number
+                        var ams_residentkey_formatted = result["ams_residentkey@OData.Community.Display.V1.FormattedValue"];
+                        var ams_retsource = result["ams_retsource"]; // Multiline Text
+                        var ams_rettransaction = result["ams_rettransaction"]; // Date Time
+                        var ams_rettransaction_formatted = result["ams_rettransaction@OData.Community.Display.V1.FormattedValue"];
+                        let arrItems = [];
+                        let anchorPostCode = `<a target="_blank" href="${crmUrl}/main.aspx?newWindow=true&pagetype=entityrecord&etn=ams_residenttransactions&id=${ams_residenttransactionsid}">${ams_retpostcode}</a>`;
+                        
+                            arrItems.push(ams_rettransaction_formatted);
+                            arrItems.push(ams_retposted_formatted);
+                            arrItems.push(anchorPostCode);
+                            arrItems.push(ams_retamount);
+                            arrItems.push(ams_retchecknumber);
+                            arrItems.push(ams_retmemo);
+                            arrItems.push(ams_retsource);
+                            arrItems.push(ams_retbanktransactionid);
+                            arrItems.push(ams_employeekey);
+                            arrItems.push(ams_residentkey);
+                            arrData.push(arrItems);
+                            arrItems = [];
+                    }
+                    table();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log(xhr);
+                }
+            });   // Convert Json data into 2-d Array
+
+        }
+    </script>
+</body>
+
+</html>
+
+
+
